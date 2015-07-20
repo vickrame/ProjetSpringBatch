@@ -1,0 +1,37 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+    
+	<bean id="report" class="com.spring.batch.stats.Report" />
+	<bean id="listennerJob1" class="com.test.spring.batch.listenner.JobListener"/>
+	<bean id="modelTransform" scope="step"
+		class="com.spring.batch.configuration.transformer.ModelTransformer"  />
+	<bean id="modelProcessor" scope="step"
+		class="com.spring.batch.configuration.processor.CustomProcessor" />
+	<bean id="modelValidProcessor" scope="step"
+		class="com.spring.batch.configuration.processor.CustomValidModelProcessor" />
+	<bean id="lectureFichier" class="com.spring.batch.configuration.reader.CustumFileReader" />
+	<bean id="ecrireFichier" class="com.spring.batch.configuration.writer.CustumFileWriter" />
+	<bean id="taskValid"
+		class="com.spring.batch.configuration.custom.tasklet.CustomTasklet" />
+
+	<bean id="recorder"
+		class="com.spring.batch.configuration.dto.ProcessManagerListModelDTO" />
+	
+<bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/>  
+	<bean id="jobRepository"
+		class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="jobLauncher"
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+	</bean>
+	
+	<bean id="model" class="com.spring.batch.configuration.model.Model"></bean>
+
+</beans>

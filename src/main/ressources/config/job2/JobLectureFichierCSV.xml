@@ -1,0 +1,82 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+
+	<import resource="applicationContext.xml" />
+	<import resource="configMongo.xml" />
+
+	<!-- Global 
+	
+		StaxEventItemReader lecture de flux XML 
+		FlatFileItemReader  lecture de fichier plat (CVS, JSON)
+		AmqpItemReader		 lecture message AmQP
+		JMSItemReader		 lecture message JMS
+		MongoItemReader	 lecture de data sur Mongo DB
+		<CustomItem>		 implements ItemReader
+	-->
+	
+	<!-- 
+		FlatFileItemReader possede les proprietes suivants:
+			-resource 	emplacement du fichier à parser
+			-lineMapper mapper qui parse chaque ligne (entity) (org.springframework.batch.item.file.mapping.DefaultLineMapper). 
+			 Elle englobera les propriétés suivantes:
+				-lineTokenizer definit la structure du fichier CSV
+				-fieldSetMapper unmarshall 
+				
+	 -->
+	<bean id="lectureFichierCSV" class="org.springframework.batch.item.file.FlatFileItemReader">
+		<!-- Read a csv file -->
+		<property name="resource" value="classpath:config/job2/data/csv/in.csv" />
+		<property name="lineMapper">
+			<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+				<!-- split it -->
+				<property name="lineTokenizer">
+					<bean
+						class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+						<property name="names" value="idModel,commentaire" />
+					</bean>
+				</property>
+				<property name="fieldSetMapper">
+					<!-- map to an object -->
+					<bean
+						class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+						<property name="prototypeBeanName" value="model" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+
+
+	<!-- write it to MongoDB, 'employee' collection (table) -->
+	<bean id="ecrireMongoDB" class="org.springframework.batch.item.data.MongoItemWriter">
+		<property name="template" ref="mongoTemplate" />
+		<property name="collection" value="dataTable" />  <!-- collection egale nom de la table -->
+	</bean>  
+
+		<!-- write it to MongoDB, 'employee' collection (table) -->
+	<bean id="logProcessInterceptor" class="com.spring.batch.configuration.processor.LogProcessInterceptor">
+	</bean>  
+	
+	<batch:job id="reportJob" job-repository="jobRepository" parent="jobLauncher">
+		<batch:step id="step1" >
+			<batch:tasklet transaction-manager="transactionManager" >
+			    <!--  -->
+				<batch:chunk  commit-interval="5" reader="lectureFichier" processor="logProcessInterceptor" writer="ecrireMongoDB">
+				</batch:chunk>
+			</batch:tasklet>
+<!-- 			<batch:end on="SUCCESS"/> -->
+		</batch:step>
+
+<!-- 		<batch:step id="step2">
+			<batch:tasklet ref="taskValid" />
+		</batch:step> -->
+	</batch:job>
+
+</beans>

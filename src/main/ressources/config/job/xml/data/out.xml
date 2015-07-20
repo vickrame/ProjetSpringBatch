@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<all>
+	<root>
+		<familles>
+			<famille>
+				<enfants>
+					<enfant>
+						<nom>Léa</nom>
+					</enfant>
+					<enfant>
+						<nom>Chloé</nom>
+					</enfant>
+				</enfants>
+				<nom>ujoodha</nom>
+				<parent>
+					<mere prenom="anne"></mere>
+					<pere prenom="vickrame"></pere>
+				</parent>
+			</famille>
+			<famille>
+				<enfants>
+					<enfant>
+						<nom>Anne</nom>
+					</enfant>
+					<enfant>
+						<nom>Céline</nom>
+					</enfant>
+				</enfants>
+				<nom>rouat</nom>
+				<parent>
+					<mere prenom="francoise"></mere>
+					<pere prenom="michel"></pere>
+				</parent>
+			</famille>
+		</familles>
+	</root>
+	<root>
+		<familles>
+			<famille>
+				<enfants>
+					<enfant>
+						<nom>Léa</nom>
+					</enfant>
+					<enfant>
+						<nom>Chloé</nom>
+					</enfant>
+				</enfants>
+				<nom>ujoodha</nom>
+				<parent>
+					<mere prenom="anne"></mere>
+					<pere prenom="vickrame"></pere>
+				</parent>
+			</famille>
+			<famille>
+				<enfants>
+					<enfant>
+						<nom>Anne</nom>
+					</enfant>
+					<enfant>
+						<nom>Céline</nom>
+					</enfant>
+				</enfants>
+				<nom>rouat</nom>
+				<parent>
+					<mere prenom="francoise"></mere>
+					<pere prenom="michel"></pere>
+				</parent>
+			</famille>
+		</familles>
+	</root>
+</all>

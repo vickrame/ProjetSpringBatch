@@ -1,0 +1,32 @@
+<root>
+	<famille>
+		<nom>ujoodha</nom>
+		<parent>
+			<pere prenom="vickrame" />
+			<mere prenom="anne" />
+		</parent>
+		<enfants>
+			<enfant>
+				<nom>Léa</nom>
+			</enfant>
+			<enfant>
+				<nom>Chloé</nom>
+			</enfant>
+		</enfants>
+	</famille>
+	<famille>
+		<nom>rouat</nom>
+		<parent>
+			<pere prenom="michel" />
+			<mere prenom="francoise" />
+		</parent>
+		<enfants>
+			<enfant>
+				<nom>Anne</nom>
+			</enfant>
+			<enfant>
+				<nom>Céline</nom>
+			</enfant>
+		</enfants>
+	</famille>
+</root>

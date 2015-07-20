@@ -1,0 +1,81 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+
+	<import resource="applicationContext.xml" />
+	<import resource="configMongo.xml" />
+	<import resource="configActiveMQ.xml" />
+	<!-- Global 
+	
+		StaxEventItemReader lecture de flux XML 
+		FlatFileItemReader  lecture de fichier plat (CVS, JSON)
+		AmqpItemReader		 lecture message AmQP
+		JMSItemReader		 lecture message JMS
+		MongoItemReader	 lecture de data sur Mongo DB
+		<CustomItem>		 implements ItemReader
+	-->
+	
+	<!-- 
+		FlatFileItemReader possede les proprietes suivants:
+			-resource 	emplacement du fichier à parser
+			-lineMapper mapper qui parse chaque ligne (entity) (org.springframework.batch.item.file.mapping.DefaultLineMapper). 
+			 Elle englobera les propriétés suivantes:
+				-lineTokenizer definit la structure du fichier CSV
+				-fieldSetMapper unmarshall 
+				
+	 -->
+
+
+	<!-- write it to MongoDB, 'employee' collection (table) -->
+	<bean id="lectureDataMongo" class="org.springframework.batch.item.data.MongoItemReader">
+		<property name="template" ref="mongoTemplate" />
+		<property name="targetType" value="com.spring.batch.configuration.model.mongo.FamilleRootMongo" />
+		<property name="query" value="{}"/>
+		<property name="sort">
+           	<map>  
+               	<entry key="_id" value="ASC" />  
+           	</map> 		    
+		</property>		    
+<!--    
+		<property name="query" value="{_id : { $in : ['546dfb8ce4b0b13cf57ab501','546dfb8ce4b0b13cf57ab502','546dfb8ce4b0b13cf57ab503','546dfb8ce4b0b13cf57ab504','546dfb8ce4b0b13cf57ab505']}}"/>    	
+		<property name="sort" >  
+           	<map>  
+               	<entry key="_id" value="#{T(org.springframework.data.domain.Sort.Direction).ASC}" />  
+           	</map>  
+       	</property> 
+       	-->
+        		
+	</bean>  
+
+	<bean id="logProcessInterceptor" class="com.spring.batch.configuration.processor.LogProcessInterceptor">
+	</bean>  
+
+	<bean id="productItemWriter" class="org.springframework.batch.item.amqp.AmqpItemWriter">
+    	<property name="jmsTemplate" ref="jmsTemplate" />
+  	</bean>
+  	
+  	<beans:bean id="amqpItemWriter" class="org.springframework.batch.item.amqp.AmqpItemWriter">
+        <beans:constructor-arg ref="outboundAmqpTemplate"/>
+    </beans:bean>
+	
+	
+	<batch:job id="reportJob" job-repository="jobRepository" parent="jobLauncher">
+		<batch:step id="step1" >
+			<batch:tasklet transaction-manager="transactionManager" >
+			    <!--  -->
+				<batch:chunk  commit-interval="2" reader="lectureDataMongo" processor="logProcessInterceptor" writer="amqpItemWriter"/>
+			</batch:tasklet>
+<!-- 			<batch:end on="SUCCESS"/> -->
+		</batch:step>
+
+<!-- 		<batch:step id="step2">
+			<batch:tasklet ref="taskValid" />
+		</batch:step> -->
+	</batch:job>
+
+</beans>
